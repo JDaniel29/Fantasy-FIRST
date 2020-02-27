@@ -7,3 +7,7 @@ An idea to run a script that generates results for certain input teams. Now, her
 sudo apt install libcurl4-openssl-dev
 sudo apt-get install make
 ```
+
+## Libraries (C++)
+[JSON for Modern C++](https://github.com/nlohmann/json)
+
