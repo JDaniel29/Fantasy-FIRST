@@ -12,6 +12,7 @@ FILE* callTheBlueAlliance();
 void parseTempFile(FILE* tempFile);
 
 
+
 int main(){
     //Step 1: Get the Data from Blue Alliance
     FILE* tempFile = callTheBlueAlliance();
@@ -58,7 +59,12 @@ FILE* callTheBlueAlliance(){
         }
 
         //Set the URL and Header for the Request
-        curl_easy_setopt(myHandle, CURLOPT_URL, "https://www.thebluealliance.com/api/v3/event/2020ohmv/district_points");
+        string competitionKey = "gagai";
+        string url = "https://www.thebluealliance.com/api/v3/event/2020" + competitionKey  + "/district_points";
+
+        cout << "URL: " << url << endl;
+
+        curl_easy_setopt(myHandle, CURLOPT_URL, url.c_str());
         curl_easy_setopt(myHandle, CURLOPT_HTTPHEADER, chunk); //Headers
         curl_easy_setopt(myHandle, CURLOPT_WRITEFUNCTION, NULL);
 
@@ -82,14 +88,14 @@ void parseTempFile(FILE* tempFile){
     string pointsFile = "";
     char currentLine[1000];
 
-    rewind(tempFile);
+    rewind(tempFile); //Start again at the start of the file
 
     int numIterations = 0;
     while(currentLine != "  \"tiebreakers\": {" && !feof(tempFile)){
         fgets(currentLine, 1000, tempFile);
         numIterations++;
 
-        if(numIterations % 200 == 0){
+        if(numIterations % 200 == 0){ //Warning just in case so I know where this is ending
             cout << "Warning: Reached " << numIterations << " iterations." << endl;
         }
 
