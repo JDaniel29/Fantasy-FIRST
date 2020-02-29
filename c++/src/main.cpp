@@ -79,26 +79,45 @@ FILE* callTheBlueAlliance(){
 }
 
 void parseTempFile(FILE* tempFile){
-    string pointsFile = "";
+    string currentTeamInfo = "";
     char currentLine[1000];
 
     rewind(tempFile);
 
+    //Skip to 3rd Line of JSON File
+    fgets(currentLine, 1000, tempFile);
+    fgets(currentLine, 1000, tempFile);
+
     int numIterations = 0;
-    while(currentLine != "  \"tiebreakers\": {" && !feof(tempFile)){
+
+    while(strcmp(currentLine, "  \"tiebreakers\": {\n" ) != 0 && !feof(tempFile)){
         fgets(currentLine, 1000, tempFile);
+        currentTeamInfo += currentLine;
+
+        cout << currentLine;
+
+        if(strcmp(currentLine, "    }, \n") == 0){
+            auto jsonParsed = json::parse(currentTeamInfo);
+            cout << jsonParsed.dump();
+
+            currentTeamInfo = "";
+        }
+
         numIterations++;
 
         if(numIterations % 200 == 0){
             cout << "Warning: Reached " << numIterations << " iterations." << endl;
         }
 
-        pointsFile += currentLine;
+
+
     }
 
     if(feof(tempFile)){
         cout << "Reached End of File" << endl;
     }
+
+    fclose(tempFile);
 
     //cout << pointsFile;
     
