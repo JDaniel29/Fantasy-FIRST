@@ -1,7 +1,7 @@
 #Configuration
 CC = g++
-CFLAGS = -Wall -g
-LFLAGS = -lcurl
+CFLAGS = -Wall -g  -std=c++11
+LFLAGS = -lcurl 
 TARGET = out
 
 #Generate Source Files
@@ -21,7 +21,7 @@ build: $(OBJECTS)
 #Generate Object Files if they don't already exist.
 bin/%.o: src/%.cpp $(HEADERS)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@ 
 
 run: build
 	./$(TARGET)

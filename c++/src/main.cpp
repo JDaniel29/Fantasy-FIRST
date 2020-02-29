@@ -1,29 +1,44 @@
 #include <iostream>
 #include <curl/curl.h>
 #include <stdlib.h>
+#include <string>
 
 #include "../libs/json.hpp"
 
 using namespace std;
+using json = nlohmann::json;
 
-int getData();
+FILE* callTheBlueAlliance();
+void parseTempFile(FILE* tempFile);
+
 
 int main(){
     //Step 1: Get the Data from Blue Alliance
-    int resultRead = getData();
+    FILE* tempFile = callTheBlueAlliance();
 
-    //Step 2: Save that Data into a String OR Straight-up Parse with Modern-JSON
+    if(tempFile == NULL){
+        return -1;
+    }
 
-    return resultRead;
+    //Step 2: Save that Data into a String OR Straight-up Parse with Modern-JSON    
+    parseTempFile(tempFile);
+
+
+    return 0;
 }
 
-int getData(){
+FILE* callTheBlueAlliance(){
     curl_global_init( CURL_GLOBAL_ALL ); //Initialize CURL
     
     CURL* myHandle;  //Handle for Requests
     CURLcode result; //Result of Curl Retrieval
 
+    
+    FILE* tempFile = NULL; //Temporary File
+
     myHandle = curl_easy_init(); //Initialize the Handle
+
+
 
     if(myHandle){ //If the Handle is Initialized Succesfully 
         struct curl_slist *chunk = NULL; //Headers List
@@ -33,14 +48,13 @@ int getData(){
         chunk = curl_slist_append(chunk, "X-TBA-Auth-Key: biuWVtbepPQnfgdMwPJnAmomoCm8Uw0VaO1UBdHsWzKJJCTOdUUprjHEsSIss01i");
 
         //Get the Temporary File we use to hold the data
-        FILE* tempFile = NULL;
-        tempFile = fopen("tempFile.txt", "w");
+        tempFile = fopen("tempFile.txt", "w+");
 
         if(tempFile != NULL){
             curl_easy_setopt(myHandle, CURLOPT_WRITEDATA, tempFile);
         } else {
             cout << "ERROR WRITING TO TEMPFILE.txt" << endl;
-            return -1;
+            return NULL;
         }
 
         //Set the URL and Header for the Request
@@ -51,6 +65,7 @@ int getData(){
         result = curl_easy_perform(myHandle); //Try to get the result
 
         if(result != CURLE_OK){
+        free(tempFile);
             fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(result));
         } else {
             cout << "No Errors in Reading Data" << endl;
@@ -58,8 +73,34 @@ int getData(){
 
         curl_easy_cleanup(myHandle);
         curl_slist_free_all(chunk);
-        free(tempFile);
     }
 
-    return 0;
+    return tempFile;
+}
+
+void parseTempFile(FILE* tempFile){
+    string pointsFile = "";
+    char currentLine[1000];
+
+    rewind(tempFile);
+
+    int numIterations = 0;
+    while(currentLine != "  \"tiebreakers\": {" && !feof(tempFile)){
+        fgets(currentLine, 1000, tempFile);
+        numIterations++;
+
+        if(numIterations % 200 == 0){
+            cout << "Warning: Reached " << numIterations << " iterations." << endl;
+        }
+
+        pointsFile += currentLine;
+    }
+
+    if(feof(tempFile)){
+        cout << "Reached End of File" << endl;
+    }
+
+    //cout << pointsFile;
+    
+
 }
