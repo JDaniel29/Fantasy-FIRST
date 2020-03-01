@@ -3,7 +3,7 @@ CC = g++
 CFLAGS = -Wall -g  -std=c++11
 LFLAGS = -lcurl 
 TARGET = out
-INPUT_FILE = GainesvillePicks.input
+INPUT_FILE = ExamplePicks.input
 
 #Generate Source Files
 CPLUS_SOURCES := $(wildcard src/*.cpp)
