@@ -11,3 +11,24 @@ sudo apt-get install make
 ## Libraries (C++)
 [JSON for Modern C++](https://github.com/nlohmann/json)
 
+## Input File Formatting
+For the C++ program, we use input redirection when entering lineups. One example of a validly formatted file would be:
+```
+Name1
+3
+127
+9898
+2939
+y
+Name2
+3
+347
+9839
+393
+q
+```
+The conventions of the file are as follows:
+1. Type in the Name of the Person
+2. Type in the number of teams in their lineup
+3. Enter the team numbers
+4. Enter 'y' if you want to keep looping OR 'q' to exit.
