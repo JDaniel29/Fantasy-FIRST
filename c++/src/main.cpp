@@ -20,6 +20,7 @@ int main(int argc, char* argv[]) {
     //Check to make sure we have a valid input file
     string inputFileName;
     string competitionKey;
+    int currentIteration = 0;
 
     if (argc == 1) {
         cout << "Please enter the valid name of an input file: ";
@@ -50,8 +51,8 @@ int main(int argc, char* argv[]) {
     }
 
     while (1) {
-
         system("clear");
+        cout << "Current Iteration: " << currentIteration << endl;
 
         //Step 1: Get the Data from Blue Alliance
         FILE* tempFile = callTheBlueAlliance(competitionKey);
@@ -66,6 +67,8 @@ int main(int argc, char* argv[]) {
         scoreLineup(inputFileName);
 
         usleep(5 * 1000000);
+
+        currentIteration++;
     }
 
     return 0;
