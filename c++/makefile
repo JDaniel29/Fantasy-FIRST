@@ -4,6 +4,7 @@ CFLAGS = -Wall -g  -std=c++11
 LFLAGS = -lcurl 
 TARGET = out
 INPUT_FILE = ExamplePicks.input
+COMPETITION_KEY = example
 
 #Generate Source Files
 CPLUS_SOURCES := $(wildcard src/*.cpp)
@@ -25,7 +26,7 @@ bin/%.o: src/%.cpp $(HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@ 
 
 run: build
-	./$(TARGET) < $(INPUT_FILE)
+	./$(TARGET) $(INPUT_FILE) $(COMPETITION_KEY)
 
 clean:
 	rm $(TARGET)

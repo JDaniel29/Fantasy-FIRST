@@ -1,38 +1,82 @@
 #include "Team.h"
 #include <curl/curl.h>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <stdlib.h>
 #include <string>
+#include <unistd.h>
 
 #include "../libs/json.hpp"
 
 using namespace std;
 using json = nlohmann::json;
 
-FILE* callTheBlueAlliance();
+FILE* callTheBlueAlliance(string competitionKey);
 void parseTempFile(FILE* tempFile);
-void scoreLineup();
+void scoreLineup(string inputFileName);
 
-int main() {
+int main(int argc, char* argv[]) {
+    //Check to make sure we have a valid input file
+    string inputFileName;
+    string competitionKey;
 
-    //Step 1: Get the Data from Blue Alliance
-    FILE* tempFile = callTheBlueAlliance();
+    if (argc == 1) {
+        cout << "Please enter the valid name of an input file: ";
+        cin >> inputFileName;
 
-    if (tempFile == NULL) {
-        return -1;
+        cout << "Please Enter the Competition Key: ";
+        cin >> competitionKey;
+    } else if (argc == 2) {
+        if (strcmp(argv[1], "ExamplePicks.input") == 0) {
+            cout << "Please enter the valid name of an input file: ";
+            cin >> inputFileName;
+        }
+        cout << "Please Enter the Competition Key: ";
+        cin >> competitionKey;
+    } else if (argc >= 3) {
+        if (strcmp(argv[1], "ExamplePicks.input") == 0) {
+            cout << "Please enter the valid name of an input file: ";
+            cin >> inputFileName;
+        }
+
+        if (strcmp(argv[2], "example") == 0) {
+            cout << "Please Enter the Competition Key: ";
+            cin >> competitionKey;
+        }
+    } else {
+        inputFileName = argv[1];
+        competitionKey = argv[2];
     }
 
-    //Step 2: Save that Data into a String OR Straight-up Parse with Modern-JSON
-    parseTempFile(tempFile);
+    while (1) {
 
-    //Step 3: Run and Score Lineup
-    scoreLineup();
+        system("clear");
+        cout << "Top of Loop" << endl;
+
+        //Step 1: Get the Data from Blue Alliance
+        FILE* tempFile = callTheBlueAlliance(competitionKey);
+
+        if (tempFile == NULL) {
+            return -1;
+        }
+
+        cout << "About to Parse " << endl;
+        //Step 2: Save that Data into a String OR Straight-up Parse with Modern-JSON
+        parseTempFile(tempFile);
+
+        cout << "Score it" << endl;
+        //Step 3: Run and Score Lineup
+        scoreLineup(inputFileName);
+
+        usleep(5 * 1000000);
+        cout << "Sleep Finished" << endl;
+    }
 
     return 0;
 }
 
-FILE* callTheBlueAlliance() {
+FILE* callTheBlueAlliance(string competitionKey) {
     curl_global_init(CURL_GLOBAL_ALL); //Initialize CURL
 
     CURL* myHandle;  //Handle for Requests
@@ -60,8 +104,7 @@ FILE* callTheBlueAlliance() {
         }
 
         //Set the URL and Header for the Request
-        string competitionKey = "gagai";
-        string url = "https://www.thebluealliance.com/api/v3/event/2020" + competitionKey  + "/district_points";
+        string url = "https://www.thebluealliance.com/api/v3/event/2020" + competitionKey + "/district_points";
 
         cout << "URL: " << url << endl;
 
@@ -89,11 +132,15 @@ void parseTempFile(FILE* tempFile) {
     string stringifiedFile = ""; //File to be converted to string
     char currentLine[1000];
 
+    cout << "Restarting Temp file " << endl;
     rewind(tempFile); //Restart Temp File
-
+    cout << "Restared Temp File " << endl;
     while (!feof(tempFile)) { //Parse the entire file
+
         fgets(currentLine, 1000, tempFile);
         stringifiedFile += currentLine;
+
+        cout << currentLine << endl;
     }
 
     auto jsonparsed = json::parse(stringifiedFile); //This value will hold the parsed file.
@@ -110,21 +157,32 @@ void parseTempFile(FILE* tempFile) {
     fclose(tempFile);
 }
 
-void scoreLineup() {
+void scoreLineup(string inputFileName) {
     char continueLooping;
-    string name;
+    string teamName;
+
+    ifstream inputFile(inputFileName);
+
+    inputFile.clear();
+    inputFile.seekg(0);
+
+    if (inputFile.is_open() == false) {
+        cout << "Error Opening input File: " << inputFileName << endl;
+        return;
+    }
+
     do {
         int numTeams, currentTeamNum, totalPoints = 0;
 
-        cin >> name;
-        cin >> numTeams; //Read Number of Teams
-        
+        inputFile >> teamName;
+        inputFile >> numTeams; //Read Number of Teams
+
         //TODO: Adjust to work in a linked list way
         int* teamNumbers = new int[4];
         double* teamScores = new double[4];
 
         for (int i = 0; i < numTeams; i++) {
-            cin >> currentTeamNum; //Read Current Team Number
+            inputFile >> currentTeamNum; //Read Current Team Number
 
             teamNumbers[i] = currentTeamNum;
             teamScores[i] = getTeamPoints(currentTeamNum);
@@ -132,13 +190,15 @@ void scoreLineup() {
             totalPoints += getTeamPoints(currentTeamNum);
         }
 
-        cout << name << "'s Linuep" << endl;
+        cout << teamName << "'s Linuep" << endl;
         cout << " Team # | District Points" << endl;
         for (int i = 0; i < numTeams; i++) {
             cout << " " << left << setw(6) << teamNumbers[i] << " | " << teamScores[i] << endl;
         }
-        cout << "Total Points: " << totalPoints << endl << endl;;
+        cout << "Total Points: " << totalPoints << endl
+             << endl;
+        ;
 
-        cin >> continueLooping;
+        inputFile >> continueLooping;
     } while (continueLooping != 'q');
 }
