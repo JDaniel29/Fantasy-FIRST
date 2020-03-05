@@ -60,7 +60,12 @@ FILE* callTheBlueAlliance() {
         }
 
         //Set the URL and Header for the Request
-        curl_easy_setopt(myHandle, CURLOPT_URL, "https://www.thebluealliance.com/api/v3/event/2020gagai/district_points");
+        string competitionKey = "gagai";
+        string url = "https://www.thebluealliance.com/api/v3/event/2020" + competitionKey  + "/district_points";
+
+        cout << "URL: " << url << endl;
+
+        curl_easy_setopt(myHandle, CURLOPT_URL, url.c_str());
         curl_easy_setopt(myHandle, CURLOPT_HTTPHEADER, chunk); //Headers
         curl_easy_setopt(myHandle, CURLOPT_WRITEFUNCTION, NULL);
 
