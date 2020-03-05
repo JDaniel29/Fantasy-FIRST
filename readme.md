@@ -32,3 +32,11 @@ The conventions of the file are as follows:
 2. Type in the number of teams in their lineup
 3. Enter the team numbers
 4. Enter 'y' if you want to keep looping OR 'q' to exit.
+
+## C++ Execution
+To execute the code for the makefile you have three possible commands:
+```bash
+make run
+make run INPUT_FILE=someFile.input
+make run INPUT_FILE=someFile.input COMPETITION_KEY=someComp
+```
