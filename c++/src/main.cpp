@@ -52,7 +52,6 @@ int main(int argc, char* argv[]) {
     while (1) {
 
         system("clear");
-        cout << "Top of Loop" << endl;
 
         //Step 1: Get the Data from Blue Alliance
         FILE* tempFile = callTheBlueAlliance(competitionKey);
@@ -60,17 +59,13 @@ int main(int argc, char* argv[]) {
         if (tempFile == NULL) {
             return -1;
         }
-
-        cout << "About to Parse " << endl;
         //Step 2: Save that Data into a String OR Straight-up Parse with Modern-JSON
         parseTempFile(tempFile);
 
-        cout << "Score it" << endl;
         //Step 3: Run and Score Lineup
         scoreLineup(inputFileName);
 
         usleep(5 * 1000000);
-        cout << "Sleep Finished" << endl;
     }
 
     return 0;
@@ -132,15 +127,11 @@ void parseTempFile(FILE* tempFile) {
     string stringifiedFile = ""; //File to be converted to string
     char currentLine[1000];
 
-    cout << "Restarting Temp file " << endl;
     rewind(tempFile); //Restart Temp File
-    cout << "Restared Temp File " << endl;
     while (!feof(tempFile)) { //Parse the entire file
 
         fgets(currentLine, 1000, tempFile);
         stringifiedFile += currentLine;
-
-        cout << currentLine << endl;
     }
 
     auto jsonparsed = json::parse(stringifiedFile); //This value will hold the parsed file.
