@@ -27,6 +27,10 @@ bin/%.o: src/%.cpp $(HEADERS)
 run: build
 	./$(TARGET) < $(INPUT_FILE)
 
+clean:
+	rm $(TARGET)
+	rm bin -rf
+
 #Print the Files that Exist
 which:
 	@echo "FOUND SOURCES: $(CPLUS_SOURCES)"
