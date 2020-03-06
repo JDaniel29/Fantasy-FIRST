@@ -184,14 +184,20 @@ void scoreLineup(string inputFileName) {
         int* teamNumbers = new int[4];
         double* teamScores = new double[4];
 
+        cerr << "Reported Points: " << endl;
+
         for (int i = 0; i < numTeams; i++) {
             inputFile >> currentTeamNum; //Read Current Team Number
 
             teamNumbers[i] = currentTeamNum;
             teamScores[i] = getTeamPoints(currentTeamNum);
 
+            cerr << teamNumbers[i] << " : " << teamScores[i] << endl;
+
             totalPoints += getTeamPoints(currentTeamNum);
         }
+
+        cerr << "Total Points for " << teamName << ": " << totalPoints << endl;
 
         cout << teamName << "'s Linuep" << endl;
         cout << " Team # | District Points" << endl;
