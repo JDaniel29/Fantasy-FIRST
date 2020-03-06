@@ -51,5 +51,7 @@ int getTeamPoints(unsigned int teamNum) {
 
         currentTeam = currentTeam->getNextTeam();
     }
-    return -1;
+
+    cerr << "WARNING: Team " << teamNum << " not found in list" << endl;
+    return 0;
 }

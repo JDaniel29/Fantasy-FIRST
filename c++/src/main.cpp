@@ -5,6 +5,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string>
+#include <time.h>
 #include <unistd.h>
 
 #include "../libs/json.hpp"
@@ -52,12 +53,16 @@ int main(int argc, char* argv[]) {
 
     while (1) {
         system("clear");
-        cout << "Current Iteration: " << currentIteration << endl;
+        cerr << "Current Iteration: " << currentIteration << endl;
+
+        time_t my_time = time(NULL);
+        cerr << "Current Timestamp: " << ctime(&my_time) << endl;
 
         //Step 1: Get the Data from Blue Alliance
         FILE* tempFile = callTheBlueAlliance(competitionKey);
 
         if (tempFile == NULL) {
+            cout << "Fatal Error. See Error Log" << endl;
             return -1;
         }
         //Step 2: Save that Data into a String OR Straight-up Parse with Modern-JSON
@@ -66,9 +71,13 @@ int main(int argc, char* argv[]) {
         //Step 3: Run and Score Lineup
         scoreLineup(inputFileName);
 
+        cout << "Updated as of: " << ctime(&my_time) << endl;
+
         usleep(5 * 1000000);
 
         currentIteration++;
+
+        cerr << "========" << endl;
     }
 
     return 0;
@@ -97,14 +106,14 @@ FILE* callTheBlueAlliance(string competitionKey) {
         if (tempFile != NULL) {
             curl_easy_setopt(myHandle, CURLOPT_WRITEDATA, tempFile);
         } else {
-            cout << "ERROR WRITING TO TEMPFILE.txt" << endl;
+            cerr << "ERROR WRITING TO TEMPFILE.txt" << endl;
             return NULL;
         }
 
         //Set the URL and Header for the Request
         string url = "https://www.thebluealliance.com/api/v3/event/2020" + competitionKey + "/district_points";
 
-        cout << "URL: " << url << endl;
+        cerr << "URL: " << url << endl;
 
         curl_easy_setopt(myHandle, CURLOPT_URL, url.c_str());
         curl_easy_setopt(myHandle, CURLOPT_HTTPHEADER, chunk); //Headers
@@ -114,9 +123,9 @@ FILE* callTheBlueAlliance(string competitionKey) {
 
         if (result != CURLE_OK) {
             free(tempFile);
-            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(result));
+            cerr << "curl_easy_perform() failed: " << curl_easy_strerror(result) << endl;
         } else {
-            cout << "No Errors in Reading Data" << endl;
+            cerr << "No Errors in Reading Data" << endl;
         }
 
         curl_easy_cleanup(myHandle);
@@ -130,7 +139,7 @@ void parseTempFile(FILE* tempFile) {
     string stringifiedFile = ""; //File to be converted to string
     char currentLine[1000];
 
-    rewind(tempFile); //Restart Temp File
+    rewind(tempFile);         //Restart Temp File
     while (!feof(tempFile)) { //Parse the entire file
 
         fgets(currentLine, 1000, tempFile);

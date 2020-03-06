@@ -26,7 +26,7 @@ bin/%.o: src/%.cpp $(HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@ 
 
 run: build
-	./$(TARGET) $(INPUT_FILE) $(COMPETITION_KEY)
+	./$(TARGET) $(INPUT_FILE) $(COMPETITION_KEY) 2> errorLog.txt
 
 clean:
 	rm $(TARGET)
