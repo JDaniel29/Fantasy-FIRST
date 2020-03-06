@@ -46,6 +46,8 @@ class TeamNode{
 void insertNewTeam(Team* newTeam);
 void printAllTeams();
 int getTeamPoints(unsigned int teamNum);
+void removeAllTeams();
+int getNumberOfTeamsInList();
 
 
 #endif

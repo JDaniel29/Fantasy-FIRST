@@ -72,12 +72,15 @@ int main(int argc, char* argv[]) {
         scoreLineup(inputFileName);
 
         cout << "Updated as of: " << ctime(&my_time) << endl;
+        cerr << "Number of Teams in List: " << getNumberOfTeamsInList() << endl;
 
         usleep(5 * 1000000);
 
         currentIteration++;
 
         cerr << "========" << endl;
+
+        removeAllTeams();
     }
 
     return 0;
